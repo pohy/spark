@@ -17,16 +17,11 @@
         {},
     );
 
-    setupKeyboard();
-
-    function setupKeyboard() {
-        const keyboard = Keyboard.getInstance();
-        Object.keys(BINDS).forEach((action) => {
-            keyboard.onDown(BINDS[action], toggleKeyboardState(action, true));
-            keyboard.onUp(BINDS[action], toggleKeyboardState(action, false));
-        });
-        return keyboard;
-    }
+    const keyboard = Keyboard.getInstance();
+    Object.keys(BINDS).forEach((action) => {
+        keyboard.onDown(BINDS[action], toggleKeyboardState(action, true));
+        keyboard.onUp(BINDS[action], toggleKeyboardState(action, false));
+    });
 
     function toggleKeyboardState(stateName, value) {
         return () => {

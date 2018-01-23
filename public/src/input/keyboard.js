@@ -3,13 +3,19 @@
 
     let keyboard = null;
 
-    class Keyboard {
-        constructor() {
-            this.onKey = this.onKey.bind(this);
+    const LISTENER_TYPES = {
+        down: 'keydown',
+        up: 'keyup',
+        press: 'keypress',
+    };
 
-            window.addEventListener('keydown', this.onKey, false);
-            window.addEventListener('keypress', this.onKey, false);
-            window.addEventListener('keyup', this.onKey, false);
+    window.Keyboard = class Keyboard {
+        constructor() {
+            this._onKey = this._onKey.bind(this);
+
+            Object.values(LISTENER_TYPES).forEach((event) =>
+                window.addEventListener(event, this._onKey, false),
+            );
 
             this.listeners = [];
             this.id = 0;
@@ -22,7 +28,10 @@
             return keyboard;
         }
 
-        onKey({ type, code }) {
+        _onKey(event) {
+            event.preventDefault();
+
+            const { type, code } = event;
             this.listeners.filter(keyAndType).forEach(call);
 
             function call({ callback }) {
@@ -34,14 +43,14 @@
             }
         }
 
-        onPress(keys, callback, preventDefault) {
-            return this._addKeyListener(keys, 'keypress', callback);
+        onPress(keys, callback) {
+            return this._addKeyListener(keys, LISTENER_TYPES.press, callback);
         }
         onDown(keys, callback) {
-            return this._addKeyListener(keys, 'keydown', callback);
+            return this._addKeyListener(keys, LISTENER_TYPES.down, callback);
         }
         onUp(keys, callback) {
-            return this._addKeyListener(keys, 'keyup', callback);
+            return this._addKeyListener(keys, LISTENER_TYPES.up, callback);
         }
         _addKeyListener(keys, type, callback) {
             if (!Array.isArray(keys)) {
@@ -52,7 +61,7 @@
             );
             return this.id++;
         }
-    }
+    };
 
     class KeyboardListener {
         /**
@@ -68,6 +77,4 @@
             this.callback = callback;
         }
     }
-
-    window.Keyboard = Keyboard;
 })();

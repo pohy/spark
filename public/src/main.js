@@ -25,9 +25,13 @@
             canvas: gameEl,
         });
         renderer.setSize(width, height);
-        renderer.shadowMapEnabled = true;
+        renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
         renderer.domElement.focus();
+
+        mouseStateSetElement(renderer.domElement);
+
+        const raycaster = new THREE.Raycaster();
 
         const ground = createPlane();
         ground.position.y = -0.5;
@@ -50,6 +54,8 @@
         camera.rotateX(degToRad(-45));
         camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), degToRad(-45));
 
+        let wasClicked = false;
+
         animate();
 
         function animate() {
@@ -63,12 +69,45 @@
         }
 
         function update(delta) {
+            const { position, position: { x, y }, left } = mouseState();
+            raycaster.setFromCamera(position, camera);
+            if (left && !wasClicked) {
+                const intersects = raycaster.intersectObject(ground);
+                wasClicked = true;
+                if (intersects.length) {
+                    scene.add(generateCube(intersects[0].point));
+                }
+            } else if (!left && wasClicked) {
+                wasClicked = false;
+            }
+            const dampFactor = 7;
+            camera.lookAt(
+                new THREE.Vector3(x * dampFactor, y * dampFactor, 0.5),
+            );
             player.update(delta);
         }
 
         function render() {
             renderer.render(scene, camera);
         }
+
+        function generateCube({ x, y, z }) {
+            const cube = createCube();
+            cube.position.set(x, y + 0.5, z);
+            return cube;
+        }
+    }
+
+    function createCube() {
+        const geometry = new THREE.CubeGeometry(1, 1, 1);
+        const color = new THREE.Color(Math.random(), 1, Math.random());
+        const material = new THREE.MeshPhongMaterial({
+            color: color.getHex(),
+        });
+        const cubeMesh = new THREE.Mesh(geometry, material);
+        cubeMesh.castShadow = true;
+        cubeMesh.receiveShadow = true;
+        return cubeMesh;
     }
 
     function createSkyBox() {

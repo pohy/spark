@@ -39,16 +39,16 @@
                 playerWithLight.translateZ(-currentMoveSpeed);
             }
             if (left && !right) {
-                playerWithLight.rotation.y += currentRotation;
+                playerWithLight.rotateY(currentRotation);
             }
             if (right && !left) {
-                playerWithLight.rotation.y -= currentRotation;
+                playerWithLight.rotateY(-currentRotation);
             }
         }
     };
 
     function createPlayerMesh() {
-        const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+        const geometry = new THREE.BoxGeometry(0.5, 1, 0.3, 1, 1, 1);
         const faceMaterials = [
             new THREE.MeshPhongMaterial({ color: 0x3333ff }),
             new THREE.MeshPhongMaterial({ color: 0x3333ff }),
@@ -57,8 +57,7 @@
             new THREE.MeshPhongMaterial({ color: 0xffff33 }),
             new THREE.MeshPhongMaterial({ color: 0x3333ff }),
         ];
-        const material = new THREE.MeshFaceMaterial(faceMaterials);
-        const playerMesh = new THREE.Mesh(geometry, material);
+        const playerMesh = new THREE.Mesh(geometry, faceMaterials);
         playerMesh.castShadow = true;
         playerMesh.receiveShadow = true;
         return playerMesh;
@@ -69,8 +68,6 @@
         light.position.y = 2;
         light.position.z = 2;
         light.castShadow = true;
-        light.shadowCameraVisible = true;
-        light.shadowDarkness = 0.75;
         return light;
     }
 })();
