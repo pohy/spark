@@ -1,0 +1,14 @@
+{
+  "name": "spark",
+  "version": "1.0.0",
+  "description": "A game",
+  "private": true,
+  "scripts": {
+    "start": "live-server --no-browser --port=3000 public/",
+  },
+  "author": "David Pohan",
+  "devDependencies": {
+    "live-server": "^1.2.0",
+    "prettier": "1.10.2"
+  }
+}
