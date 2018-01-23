@@ -1,4 +1,4 @@
-(function () {
+(function() {
     'use strict';
 
     window.Player = class Player {
@@ -18,15 +18,19 @@
 
         update(delta) {
             const {
-                moveSpeed, rotationSpeed, playerWithLight, sprintMultiplier
+                moveSpeed,
+                rotationSpeed,
+                playerWithLight,
+                sprintMultiplier,
             } = this;
-            const {left, right, up, down, sprint} = keyboardState();
+            const { left, right, up, down, sprint } = keyboardState();
 
             const moveSpeedMultiplier = sprint ? sprintMultiplier : 1;
             const currentMoveSpeed = moveSpeed * moveSpeedMultiplier * delta;
 
-            const rotationMultiplier = (!up && !down) ? 2 : 1.5;
-            const currentRotation = degToRad(rotationSpeed) * rotationMultiplier * delta;
+            const rotationMultiplier = !up && !down ? 2 : 1.5;
+            const currentRotation =
+                degToRad(rotationSpeed) * rotationMultiplier * delta;
 
             if (up && !down) {
                 playerWithLight.translateZ(currentMoveSpeed);
@@ -46,21 +50,27 @@
     function createPlayerMesh() {
         const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
         const faceMaterials = [
-            new THREE.MeshPhongMaterial({color: 0x3333ff}),
-            new THREE.MeshPhongMaterial({color: 0x3333ff}),
-            new THREE.MeshPhongMaterial({color: 0x3333ff}),
-            new THREE.MeshPhongMaterial({color: 0x3333ff}),
-            new THREE.MeshPhongMaterial({color: 0xffff33}),
-            new THREE.MeshPhongMaterial({color: 0x3333ff}),
+            new THREE.MeshPhongMaterial({ color: 0x3333ff }),
+            new THREE.MeshPhongMaterial({ color: 0x3333ff }),
+            new THREE.MeshPhongMaterial({ color: 0x3333ff }),
+            new THREE.MeshPhongMaterial({ color: 0x3333ff }),
+            new THREE.MeshPhongMaterial({ color: 0xffff33 }),
+            new THREE.MeshPhongMaterial({ color: 0x3333ff }),
         ];
         const material = new THREE.MeshFaceMaterial(faceMaterials);
-        return new THREE.Mesh(geometry, material);
+        const playerMesh = new THREE.Mesh(geometry, material);
+        playerMesh.castShadow = true;
+        playerMesh.receiveShadow = true;
+        return playerMesh;
     }
 
     function createFlashlight() {
         const light = new THREE.PointLight(0xffffff);
-        light.position.y = 1;
-        light.position.z = 1;
+        light.position.y = 2;
+        light.position.z = 2;
+        light.castShadow = true;
+        light.shadowCameraVisible = true;
+        light.shadowDarkness = 0.75;
         return light;
     }
 })();

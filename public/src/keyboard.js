@@ -1,4 +1,4 @@
-(function () {
+(function() {
     'use strict';
 
     let keyboard = null;
@@ -22,16 +22,14 @@
             return keyboard;
         }
 
-        onKey({type, code}) {
-            this.listeners
-                .filter(keyAndType)
-                .forEach(call);
+        onKey({ type, code }) {
+            this.listeners.filter(keyAndType).forEach(call);
 
-            function call({callback}) {
+            function call({ callback }) {
                 callback();
             }
 
-            function keyAndType({type: listenerType, keys: listenerKeys}) {
+            function keyAndType({ type: listenerType, keys: listenerKeys }) {
                 return listenerType === type && listenerKeys.includes(code);
             }
         }
@@ -49,7 +47,9 @@
             if (!Array.isArray(keys)) {
                 keys = [keys];
             }
-            this.listeners.push(new KeyboardListener(type, keys, this.id, callback));
+            this.listeners.push(
+                new KeyboardListener(type, keys, this.id, callback),
+            );
             return this.id++;
         }
     }

@@ -1,30 +1,38 @@
-(function () {
+(function() {
     'use strict';
 
     window.addEventListener('load', main);
 
     function main() {
         const gameEl = document.getElementById('game');
-        const width = 1280, height = 720;
+        const width = 1280,
+            height = 720;
 
         const stats = new Stats();
         document.body.appendChild(stats.dom);
 
         const clock = new THREE.Clock();
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            width / height,
+            0.1,
+            1000,
+        );
         const axisHelper = new THREE.AxesHelper(50);
 
         const renderer = new THREE.WebGLRenderer({
-            canvas: gameEl
+            canvas: gameEl,
         });
         renderer.setSize(width, height);
+        renderer.shadowMapEnabled = true;
         document.body.appendChild(renderer.domElement);
         renderer.domElement.focus();
 
         const ground = createPlane();
         ground.position.y = -0.5;
         ground.rotation.x = degToRad(90);
+        ground.receiveShadow = true;
 
         const ambientLight = new THREE.AmbientLight(0x444444);
 
@@ -67,7 +75,7 @@
         const geometry = new THREE.CubeGeometry(900, 900, 900);
         const material = new THREE.MeshBasicMaterial({
             color: 0x9999ff,
-            side: THREE.BackSide
+            side: THREE.BackSide,
         });
         return new THREE.Mesh(geometry, material);
     }
@@ -77,7 +85,7 @@
         geometry.vertices.push(start);
         geometry.vertices.push(end);
         const material = new THREE.MeshBasicMaterial({
-            color: 0xff0000
+            color: 0xff0000,
         });
         return new THREE.Line(geometry, material);
     }
@@ -86,7 +94,7 @@
         const geometry = new THREE.PlaneGeometry(50, 50);
         const material = new THREE.MeshPhongMaterial({
             color: 0xa9a9a9,
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide,
         });
         return new THREE.Mesh(geometry, material);
     }

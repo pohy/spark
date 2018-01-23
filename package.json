@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "live-server --no-browser --port=3000 public/",
+    "prettier": "prettier --write public/{src/**/*.js,style.css}"
   },
   "author": "David Pohan",
   "devDependencies": {
