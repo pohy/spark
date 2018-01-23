@@ -4,6 +4,7 @@
     window.Player = class Player {
         constructor(scene) {
             this.moveSpeed = 5;
+            this.sprintMultiplier = 2;
             this.rotationSpeed = 100;
 
             this.playerMesh = createPlayerMesh();
@@ -16,19 +17,22 @@
         }
 
         update(delta) {
-            const {moveSpeed, rotationSpeed, playerWithLight} = this;
-            const {left, right, up, down} = keyboardState();
+            const {
+                moveSpeed, rotationSpeed, playerWithLight, sprintMultiplier
+            } = this;
+            const {left, right, up, down, sprint} = keyboardState();
 
-            const currentMovement = moveSpeed * delta;
+            const moveSpeedMultiplier = sprint ? sprintMultiplier : 1;
+            const currentMoveSpeed = moveSpeed * moveSpeedMultiplier * delta;
 
             const rotationMultiplier = (!up && !down) ? 2 : 1.5;
             const currentRotation = degToRad(rotationSpeed) * rotationMultiplier * delta;
 
             if (up && !down) {
-                playerWithLight.translateZ(currentMovement);
+                playerWithLight.translateZ(currentMoveSpeed);
             }
             if (down && !up) {
-                playerWithLight.translateZ(-currentMovement);
+                playerWithLight.translateZ(-currentMoveSpeed);
             }
             if (left && !right) {
                 playerWithLight.rotation.y += currentRotation;

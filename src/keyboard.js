@@ -22,7 +22,7 @@
             return keyboard;
         }
 
-        onKey({type, key}) {
+        onKey({type, code}) {
             this.listeners
                 .filter(keyAndType)
                 .forEach(call);
@@ -31,30 +31,39 @@
                 callback();
             }
 
-            function keyAndType({type: listenerType, key: listenerKey}) {
-                return listenerType === type && listenerKey === key;
+            function keyAndType({type: listenerType, keys: listenerKeys}) {
+                return listenerType === type && listenerKeys.includes(code);
             }
         }
 
-        onPress(key, callback, preventDefault) {
-            return this._addKeyListener(key, 'keypress', callback);
+        onPress(keys, callback, preventDefault) {
+            return this._addKeyListener(keys, 'keypress', callback);
         }
-        onDown(key, callback) {
-            return this._addKeyListener(key, 'keydown', callback);
+        onDown(keys, callback) {
+            return this._addKeyListener(keys, 'keydown', callback);
         }
-        onUp(key, callback) {
-            return this._addKeyListener(key, 'keyup', callback);
+        onUp(keys, callback) {
+            return this._addKeyListener(keys, 'keyup', callback);
         }
-        _addKeyListener(key, type, callback) {
-            this.listeners.push(new KeyboardListener(type, key, this.id, callback));
+        _addKeyListener(keys, type, callback) {
+            if (!Array.isArray(keys)) {
+                keys = [keys];
+            }
+            this.listeners.push(new KeyboardListener(type, keys, this.id, callback));
             return this.id++;
         }
     }
 
     class KeyboardListener {
-        constructor(type, key, id, callback) {
+        /**
+         * @param {string} type
+         * @param {array} keys
+         * @param {number} id
+         * @param {function} callback
+         */
+        constructor(type, keys, id, callback) {
             this.type = type;
-            this.key = key;
+            this.keys = keys;
             this.id = id;
             this.callback = callback;
         }
