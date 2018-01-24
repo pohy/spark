@@ -60,12 +60,12 @@
         _onMove(event) {
             event.preventDefault();
 
-            const { clientX: x, clientY: y, type: eventType } = event;
+            const { clientX: x, clientY: y, type: eventType, target } = event;
 
             this.listeners.filter(typeFilter(eventType)).forEach(call);
 
             function call({ callback, element }) {
-                if (element) {
+                if (element && element.isSameNode(target)) {
                     const {
                         offsetLeft,
                         offsetTop,
@@ -75,7 +75,7 @@
                     const relativeX = Math.min(x - offsetLeft, offsetWidth);
                     const relativeY = Math.min(y - offsetTop, offsetHeight);
                     callback({ x: relativeX, y: relativeY });
-                } else {
+                } else if (!element) {
                     callback({ x, y });
                 }
             }
