@@ -4,7 +4,7 @@
   "description": "A game",
   "private": true,
   "scripts": {
-    "start": "live-server --no-browser --port=3000 public/",
+    "start": "live-server --no-browser --port=3000 --wait=1500 public/",
     "prettier": "prettier --write public/{src/**/*.js,style.css}"
   },
   "author": "David Pohan",

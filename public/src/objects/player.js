@@ -13,6 +13,7 @@
             this.playerWithLight = new THREE.Group();
             this.playerWithLight.add(this.playerMesh);
             this.playerWithLight.add(this.flashlight);
+            this.playerWithLight.position.y += 0.5;
             scene.add(this.playerWithLight);
         }
 

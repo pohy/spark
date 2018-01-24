@@ -25,7 +25,7 @@
         listenerIDs.push(mouse.onMove(onMove(element), element));
         listenerIDs.push(mouse.onUp(onButton(false), element));
         listenerIDs.push(mouse.onDown(onButton(true), element));
-        // TODO toggle on click for a single frame
+        // TODO toggle on click for a single frame; probably a hybrid between Up and Down events
     }
 
     function onButton(value) {

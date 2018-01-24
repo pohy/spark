@@ -28,19 +28,21 @@
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
         renderer.domElement.focus();
+        renderer.domElement.addEventListener('contextmenu', (event) =>
+            event.preventDefault(),
+        );
 
         mouseStateSetElement(renderer.domElement);
 
         const raycaster = new THREE.Raycaster();
 
         const ground = createPlane();
-        ground.position.y = -0.5;
-        ground.rotation.x = degToRad(90);
+        ground.rotateX(degToRad(90));
         ground.receiveShadow = true;
 
         const ambientLight = new THREE.AmbientLight(0x444444);
 
-        const player = new Player(scene);
+        let objects = [new Player(scene)];
 
         scene.add(ambientLight);
 
@@ -69,45 +71,68 @@
         }
 
         function update(delta) {
-            const { position, position: { x, y }, left } = mouseState();
+            const {
+                position,
+                position: { x: mouseX, y: mouseY },
+                left,
+                right,
+            } = mouseState();
             raycaster.setFromCamera(position, camera);
             if (left && !wasClicked) {
-                const intersects = raycaster.intersectObject(ground);
                 wasClicked = true;
-                if (intersects.length) {
-                    scene.add(generateCube(intersects[0].point));
-                }
-            } else if (!left && wasClicked) {
+                spawnNewTree(raycaster);
+            } else if (right && !wasClicked) {
+                wasClicked = true;
+                removeIntersectedTrees(raycaster);
+            } else if (!left && !right && wasClicked) {
                 wasClicked = false;
             }
             const dampFactor = 7;
             camera.lookAt(
-                new THREE.Vector3(x * dampFactor, y * dampFactor, 0.5),
+                new THREE.Vector3(
+                    mouseX * dampFactor,
+                    mouseY * dampFactor,
+                    0.5,
+                ),
             );
-            player.update(delta);
+            objects.forEach((object) => object.update(delta));
         }
 
         function render() {
             renderer.render(scene, camera);
         }
 
-        function generateCube({ x, y, z }) {
-            const cube = createCube();
-            cube.position.set(x, y + 0.5, z);
-            return cube;
+        function spawnNewTree(raycaster) {
+            const intersects = raycaster.intersectObject(ground);
+            if (intersects.length) {
+                const { x, y, z } = intersects[0].point;
+                objects.push(new Tree(scene, { x, y: y + 0.5, z }));
+            }
+        }
+
+        function removeIntersectedTrees(raycaster) {
+            const intersects = raycaster.intersectObjects(scene.children);
+            if (intersects.length <= 0) {
+                return;
+            }
+            const intersectedUUIDs = intersects.map(
+                ({ object: { uuid } }) => uuid,
+            );
+            const treeForRemoval = objects.find(
+                objectByUUIDs(intersectedUUIDs),
+            );
+            if (!treeForRemoval) {
+                return;
+            }
+            treeForRemoval.remove();
+            objects = objects.filter(
+                ({ uuid }) => uuid !== treeForRemoval.uuid,
+            );
         }
     }
 
-    function createCube() {
-        const geometry = new THREE.CubeGeometry(1, 1, 1);
-        const color = new THREE.Color(Math.random(), 1, Math.random());
-        const material = new THREE.MeshPhongMaterial({
-            color: color.getHex(),
-        });
-        const cubeMesh = new THREE.Mesh(geometry, material);
-        cubeMesh.castShadow = true;
-        cubeMesh.receiveShadow = true;
-        return cubeMesh;
+    function objectByUUIDs(uuids) {
+        return ({ uuid }) => uuids.includes(uuid);
     }
 
     function createSkyBox() {
