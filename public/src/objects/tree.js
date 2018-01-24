@@ -17,7 +17,7 @@
             };
             this.highlightColor = 0x333333;
             this.tree = createCube();
-            this.emissiveMaterialHex = this.tree.material.emissive.getHex();
+            this.emissiveMaterialHex = this.tree.material.uniforms.emissive.value.getHex();
 
             this.tree.position.set(x, y, z);
             this.tree.rotateY(degToRad(Math.random() * 360));
@@ -25,8 +25,10 @@
         }
 
         update(delta) {
+            this.tree.material.uniforms.time.value += delta;
+            this.tree.material.needsUpdate = true;
             this.handleInitialGrowth(delta);
-            this.handlHighlighting();
+            this.handleHighlight();
         }
 
         handleInitialGrowth(delta) {
@@ -49,19 +51,23 @@
             }
         }
 
-        handlHighlighting() {
+        handleHighlight() {
             if (
                 this.rooted &&
                 this.highlighted.current &&
                 !this.highlighted.next
             ) {
                 this.highlighted.current = false;
-                this.tree.material.emissive.setHex(this.emissiveMaterialHex);
+                this.tree.material.uniforms.emissive.value.setHex(
+                    this.emissiveMaterialHex,
+                );
             }
             if (this.rooted && this.highlighted.next) {
                 this.highlighted.current = true;
                 this.highlighted.next = false;
-                this.tree.material.emissive.setHex(this.highlightColor);
+                this.tree.material.uniforms.emissive.value.setHex(
+                    this.highlightColor,
+                );
             }
         }
 
@@ -84,11 +90,25 @@
 
     function createCube() {
         const geometry = new THREE.CubeGeometry(1, 1, 1);
-        const color = new THREE.Color(Math.random(), 1, Math.random());
-        const material = new THREE.MeshPhongMaterial({
-            color: color.getHex(),
+        const uniforms = THREE.UniformsUtils.merge([
+            THREE.ShaderLib.lambert.uniforms,
+            {
+                diffuse: {
+                    value: new THREE.Color(Math.random(), 1, Math.random()),
+                },
+                time: {
+                    type: 'f',
+                    value: 0,
+                },
+            },
+        ]);
+        const shaderMaterial = new THREE.ShaderMaterial({
+            uniforms,
+            vertexShader: TreeShaders.vertex,
+            fragmentShader: TreeShaders.fragment,
+            lights: true,
         });
-        const cubeMesh = new THREE.Mesh(geometry, material);
+        const cubeMesh = new THREE.Mesh(geometry, shaderMaterial);
         cubeMesh.castShadow = true;
         cubeMesh.receiveShadow = true;
         return cubeMesh;

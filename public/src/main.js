@@ -19,10 +19,10 @@
             0.1,
             1000,
         );
-        const axisHelper = new THREE.AxesHelper(50);
 
         const renderer = new THREE.WebGLRenderer({
             canvas: gameEl,
+            antialias: true,
         });
         renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
@@ -48,7 +48,6 @@
 
         scene.add(ground);
         scene.add(createSkyBox());
-        scene.add(axisHelper);
 
         camera.position.x = -5;
         camera.position.y = 5;
