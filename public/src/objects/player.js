@@ -46,6 +46,14 @@
                 playerWithLight.rotateY(-currentRotation);
             }
         }
+
+        get tags() {
+            return [TAGS.PLAYER];
+        }
+
+        get uuid() {
+            return this.playerMesh.uuid;
+        }
     };
 
     function createPlayerMesh() {

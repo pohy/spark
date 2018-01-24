@@ -78,12 +78,17 @@
                 right,
             } = mouseState();
             raycaster.setFromCamera(position, camera);
-            if (left && !wasClicked) {
+            const hoveredObjects = findHoveredObjects(raycaster);
+            const hoveredTree = hoveredObjects.find(objectByTag(TAGS.TREE));
+            if (hoveredTree) {
+                hoveredTree.highlight();
+            }
+            if (left && !wasClicked && !hoveredTree) {
                 wasClicked = true;
                 spawnNewTree(raycaster);
-            } else if (right && !wasClicked) {
+            } else if (right && !wasClicked && hoveredTree) {
                 wasClicked = true;
-                removeIntersectedTrees(raycaster);
+                removeClickedTree(hoveredTree);
             } else if (!left && !right && wasClicked) {
                 wasClicked = false;
             }
@@ -104,31 +109,39 @@
 
         function spawnNewTree(raycaster) {
             const intersects = raycaster.intersectObject(ground);
-            if (intersects.length) {
-                const { x, y, z } = intersects[0].point;
-                objects.push(new Tree(scene, { x, y: y + 0.5, z }));
-            }
-        }
-
-        function removeIntersectedTrees(raycaster) {
-            const intersects = raycaster.intersectObjects(scene.children);
             if (intersects.length <= 0) {
                 return;
             }
-            const intersectedUUIDs = intersects.map(
-                ({ object: { uuid } }) => uuid,
-            );
-            const treeForRemoval = objects.find(
-                objectByUUIDs(intersectedUUIDs),
-            );
-            if (!treeForRemoval) {
-                return;
-            }
+            const { x, y, z } = intersects[0].point;
+            objects.push(new Tree(scene, { x, y: y + 0.5, z }));
+        }
+
+        function removeClickedTree(treeForRemoval) {
             treeForRemoval.remove();
             objects = objects.filter(
                 ({ uuid }) => uuid !== treeForRemoval.uuid,
             );
         }
+
+        function findHoveredObjects(raycaster) {
+            return raycaster
+                .intersectObjects(scene.children)
+                .map(uuidFromIntersect)
+                .map((uuid) => objects.find(objectByUUID(uuid)))
+                .filter((object) => !!object);
+        }
+    }
+
+    function uuidFromIntersect({ object: { uuid } }) {
+        return uuid;
+    }
+
+    function objectByTag(tag) {
+        return ({ tags }) => tags.includes(tag);
+    }
+
+    function objectByUUID(uuid) {
+        return ({ uuid: objectUUID }) => uuid === objectUUID;
     }
 
     function objectByUUIDs(uuids) {

@@ -11,7 +11,13 @@
             this.rooted = false;
             this.growRate = 3;
             this.scene = scene;
+            this.highlighted = {
+                next: false,
+                current: false,
+            };
+            this.highlightColor = 0x333333;
             this.tree = createCube();
+            this.emissiveMaterialHex = this.tree.material.emissive.getHex();
 
             this.tree.position.set(x, y, z);
             this.tree.rotateY(degToRad(Math.random() * 360));
@@ -19,6 +25,11 @@
         }
 
         update(delta) {
+            this.handleInitialGrowth(delta);
+            this.handlHighlighting();
+        }
+
+        handleInitialGrowth(delta) {
             const { left } = mouseState();
             if (!this.rooted && !left) {
                 this.rooted = true;
@@ -38,12 +49,32 @@
             }
         }
 
+        handlHighlighting() {
+            if (
+                this.rooted &&
+                this.highlighted.current &&
+                !this.highlighted.next
+            ) {
+                this.highlighted.current = false;
+                this.tree.material.emissive.setHex(this.emissiveMaterialHex);
+            }
+            if (this.rooted && this.highlighted.next) {
+                this.highlighted.current = true;
+                this.highlighted.next = false;
+                this.tree.material.emissive.setHex(this.highlightColor);
+            }
+        }
+
+        highlight() {
+            this.highlighted.next = true;
+        }
+
         remove() {
             this.scene.remove(this.tree);
         }
 
-        static get tags() {
-            return ['tree'];
+        get tags() {
+            return [TAGS.TREE];
         }
 
         get uuid() {
