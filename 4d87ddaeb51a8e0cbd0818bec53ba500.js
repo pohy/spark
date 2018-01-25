@@ -41224,7 +41224,7 @@ var Tags;
     Tags["Terrain"] = "terrain";
 })(Tags = exports.Tags || (exports.Tags = {}));
 
-},{}],7:[function(require,module,exports) {
+},{}],10:[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var keyboardInstance;
@@ -41288,7 +41288,7 @@ var KeyboardListener = /** @class */ (function () {
     return KeyboardListener;
 }());
 
-},{}],13:[function(require,module,exports) {
+},{}],14:[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var keyboard_1 = require("./keyboard");
@@ -41332,7 +41332,7 @@ function toggleKeyboardState(stateName, value) {
     };
 }
 
-},{"./keyboard":7}],8:[function(require,module,exports) {
+},{"./keyboard":10}],8:[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var tags_1 = require("../tags");
@@ -41418,7 +41418,7 @@ var Player = /** @class */ (function () {
 }());
 exports.Player = Player;
 
-},{"../tags":5,"three":16,"../input/keyboard-state":13}],14:[function(require,module,exports) {
+},{"../tags":5,"three":16,"../input/keyboard-state":14}],13:[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var three_1 = require("three");
@@ -41433,7 +41433,7 @@ function fragment() {
     return "\nuniform float time;\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\nvarying vec3 vLightFront;\n#ifdef DOUBLE_SIDED\n    varying vec3 vLightBack;\n#endif\n" + three_1.ShaderChunk.common + "\n" + three_1.ShaderChunk.packing + "\n" + three_1.ShaderChunk.dithering_pars_fragment + "\n" + three_1.ShaderChunk.color_pars_fragment + "\n" + three_1.ShaderChunk.uv_pars_fragment + "\n" + three_1.ShaderChunk.uv2_pars_fragment + "\n" + three_1.ShaderChunk.map_pars_fragment + "\n" + three_1.ShaderChunk.alphamap_pars_fragment + "\n" + three_1.ShaderChunk.aomap_pars_fragment + "\n" + three_1.ShaderChunk.lightmap_pars_fragment + "\n" + three_1.ShaderChunk.emissivemap_pars_fragment + "\n" + three_1.ShaderChunk.envmap_pars_fragment + "\n" + three_1.ShaderChunk.bsdfs + "\n" + three_1.ShaderChunk.lights_pars + "\n" + three_1.ShaderChunk.fog_pars_fragment + "\n" + three_1.ShaderChunk.shadowmap_pars_fragment + "\n" + three_1.ShaderChunk.shadowmask_pars_fragment + "\n" + three_1.ShaderChunk.specularmap_pars_fragment + "\n" + three_1.ShaderChunk.logdepthbuf_pars_fragment + "\n" + three_1.ShaderChunk.clipping_planes_pars_fragment + "\nvoid main() {\n    " + three_1.ShaderChunk.clipping_planes_fragment + "\n    vec4 diffuseColor = vec4(\n        diffuse.x * sin( time ) * 0.5 + 0.5,\n        diffuse.y,\n        diffuse.z * sin( time + 1.0 ) * 0.5 + 0.5,\n    \topacity\n    );\n    ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n    vec3 totalEmissiveRadiance = emissive;\n    " + three_1.ShaderChunk.logdepthbuf_fragment + "\n    " + three_1.ShaderChunk.map_fragment + "\n    " + three_1.ShaderChunk.color_fragment + "\n    " + three_1.ShaderChunk.alphamap_fragment + "\n    " + three_1.ShaderChunk.alphatest_fragment + "\n    " + three_1.ShaderChunk.specularmap_fragment + "\n    " + three_1.ShaderChunk.emissivemap_fragment + "\n    reflectedLight.indirectDiffuse = getAmbientLightIrradiance( ambientLightColor );\n    " + three_1.ShaderChunk.lightmap_fragment + "\n    reflectedLight.indirectDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb );\n    #ifdef DOUBLE_SIDED\n        reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;\n    #else\n        reflectedLight.directDiffuse = vLightFront;\n    #endif\n    reflectedLight.directDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb ) * getShadowMask();\n    " + three_1.ShaderChunk.aomap_fragment + "\n    vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n    " + three_1.ShaderChunk.envmap_fragment + "\n    gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n    " + three_1.ShaderChunk.tonemapping_fragment + "\n    " + three_1.ShaderChunk.encodings_fragment + "\n    " + three_1.ShaderChunk.fog_fragment + "\n    " + three_1.ShaderChunk.premultiplied_alpha_fragment + "\n    " + three_1.ShaderChunk.dithering_fragment + "\n}\n    ";
 }
 
-},{"three":16}],9:[function(require,module,exports) {
+},{"three":16}],7:[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var three_1 = require("three");
@@ -41540,7 +41540,7 @@ var Tree = /** @class */ (function () {
 }());
 exports.Tree = Tree;
 
-},{"three":16,"../input/mouse-state":6,"../tags":5,"../shaders/tree-shaders":14}],17:[function(require,module,exports) {
+},{"three":16,"../input/mouse-state":6,"../tags":5,"../shaders/tree-shaders":13}],17:[function(require,module,exports) {
 /*
  * A fast javascript implementation of simplex noise by Jonas Wagner
  *
@@ -41958,7 +41958,7 @@ if (typeof module !== 'undefined') {
 
 })();
 
-},{}],10:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var three_1 = require("three");
@@ -42151,7 +42151,7 @@ function createPlane() {
 }
 // })();
 
-},{"three":16,"stats.js":15,"./input/mouse-state":6,"./tags":5,"./objects/player":8,"./objects/tree":9,"./objects/Terrain":10,"./input/keyboard":7}],18:[function(require,module,exports) {
+},{"three":16,"stats.js":15,"./input/mouse-state":6,"./tags":5,"./objects/player":8,"./objects/tree":7,"./objects/Terrain":9,"./input/keyboard":10}],18:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -42171,7 +42171,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '58844' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '58889' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
