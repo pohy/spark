@@ -5,14 +5,16 @@
   "private": true,
   "scripts": {
     "prettier": "prettier --write public/{src/**/*.ts,style.css}",
-    "start": "parcel public/index.html"
+    "start": "parcel public/index.html",
+    "build": "parcel build --no-cache --public-url /spark public/index.html",
+    "deploy": "gh-pages -d dist"
   },
   "author": "David Pohan",
   "devDependencies": {
     "@types/node": "^9.3.0",
     "@types/three": "^0.89.4",
+    "gh-pages": "^1.1.0",
     "parcel-bundler": "^1.5.0",
-    "parcel-plugin-typescript": "^0.5.3",
     "prettier": "1.10.2",
     "typescript": "^2.6.2"
   },
