@@ -30,7 +30,7 @@ export class Tree implements GameObject, Taggable, UUID {
 
     constructor(scene: Scene, { x, y, z }: Vector3) {
         this.scene = scene;
-        this.tree = createCube();
+        this.tree = Tree.createCube();
         const shaderMaterial = <ShaderMaterial>this.tree.material;
         this.emissiveMaterialHex = shaderMaterial.uniforms.emissive.value.getHex();
 
@@ -96,30 +96,30 @@ export class Tree implements GameObject, Taggable, UUID {
     get uuid() {
         return this.tree.uuid;
     }
-}
 
-function createCube() {
-    const geometry = new BoxGeometry(1, 1, 1);
-    const uniforms = UniformsUtils.merge([
-        ShaderLib.lambert.uniforms,
-        {
-            diffuse: {
-                value: new Color(Math.random(), 1, Math.random()),
+    private static createCube() {
+        const geometry = new BoxGeometry(1, 1, 1);
+        const uniforms = UniformsUtils.merge([
+            ShaderLib.lambert.uniforms,
+            {
+                diffuse: {
+                    value: new Color(Math.random(), 1, Math.random()),
+                },
+                time: {
+                    type: 'f',
+                    value: 0,
+                },
             },
-            time: {
-                type: 'f',
-                value: 0,
-            },
-        },
-    ]);
-    const shaderMaterial = new ShaderMaterial({
-        uniforms,
-        vertexShader: TreeShaders.vertex,
-        fragmentShader: TreeShaders.fragment,
-        lights: true,
-    });
-    const cubeMesh = new Mesh(geometry, shaderMaterial);
-    cubeMesh.castShadow = true;
-    cubeMesh.receiveShadow = true;
-    return cubeMesh;
+        ]);
+        const shaderMaterial = new ShaderMaterial({
+            uniforms,
+            vertexShader: TreeShaders.vertex,
+            fragmentShader: TreeShaders.fragment,
+            lights: true,
+        });
+        const cubeMesh = new Mesh(geometry, shaderMaterial);
+        cubeMesh.castShadow = true;
+        cubeMesh.receiveShadow = true;
+        return cubeMesh;
+    }
 }

@@ -22,6 +22,8 @@ import { Tags } from './tags';
 import { Player } from './objects/player';
 import { Tree } from './objects/tree';
 import { GameObject, Taggable, UUID } from './objects/object';
+import { Terrain } from './objects/Terrain';
+import { Keyboard } from './input/keyboard';
 
 const gameEl = <HTMLCanvasElement>document.getElementById('game');
 const width = 1280,
@@ -45,29 +47,26 @@ renderer.domElement.focus();
 renderer.domElement.addEventListener('contextmenu', (event) =>
     event.preventDefault(),
 );
+Keyboard.getInstance().onUp(['KeyR'], () => location.reload(true));
 
 mouseStateSetRelativeElement(renderer.domElement);
 
 const raycaster = new Raycaster();
 
-const ground = createPlane();
-ground.rotateX(Math.degToRad(90));
-ground.receiveShadow = true;
-
 const ambientLight = new AmbientLight(0x444444);
 
-let objects: GameObject[] = [new Player(scene)];
+let objects: GameObject[] = [new Player(scene, camera), new Terrain(scene)];
 
 scene.add(ambientLight);
 
-scene.add(ground);
+// scene.add(ground);
 scene.add(createSkyBox());
 
-camera.position.x = -5;
-camera.position.y = 5;
-camera.position.z = 5;
-camera.rotateY(Math.degToRad(-45));
-camera.rotateX(Math.degToRad(-45));
+// camera.position.x = -5;
+// camera.position.y = 5;
+// camera.position.z = 5;
+// camera.rotateY(Math.degToRad(-45));
+// camera.rotateX(Math.degToRad(-45));
 // camera.rotateOnWorldAxis(new Vector3(0, 1, 0), Math.degToRad(-45));
 
 let wasClicked = false;
@@ -107,7 +106,7 @@ function update(delta: number) {
         wasClicked = false;
     }
     const dampFactor = 7;
-    camera.lookAt(new Vector3(mouseX * dampFactor, mouseY * dampFactor, 0.5));
+    camera.lookAt(new Vector3(-mouseX * dampFactor, mouseY * dampFactor, 0.5));
     objects.forEach((object) => object.update(delta));
 }
 
@@ -116,7 +115,11 @@ function render() {
 }
 
 function spawnNewTree(raycaster: Raycaster) {
-    const intersects = raycaster.intersectObject(ground);
+    const terrain = <Terrain>objects.find(objectByTag(Tags.Terrain));
+    if (!terrain) {
+        return;
+    }
+    const intersects = raycaster.intersectObject(terrain.mesh);
     if (intersects.length <= 0) {
         return;
     }

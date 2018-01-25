@@ -4,7 +4,7 @@
   "description": "A game",
   "private": true,
   "scripts": {
-    "prettier": "prettier --write public/{src/**/*.js,style.css}",
+    "prettier": "prettier --write public/{src/**/*.ts,style.css}",
     "start": "parcel public/index.html"
   },
   "author": "David Pohan",
@@ -17,6 +17,7 @@
     "typescript": "^2.6.2"
   },
   "dependencies": {
+    "simplex-noise": "^2.3.0",
     "stats.js": "^0.17.0",
     "three": "^0.89.0"
   }

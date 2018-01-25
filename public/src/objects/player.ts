@@ -7,6 +7,7 @@ import {
     Math,
     MeshPhongMaterial,
     BoxGeometry,
+    PerspectiveCamera,
 } from 'three';
 import { GameObject, Taggable, UUID } from './object';
 import { keyboardState } from '../input/keyboard-state';
@@ -19,15 +20,19 @@ export class Player implements GameObject, Taggable, UUID {
     private flashlight: PointLight;
     private playerWithLight: Group;
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, camera: PerspectiveCamera) {
         this.rotationSpeed = 100;
 
-        this.playerMesh = createPlayerMesh();
-        this.flashlight = createFlashlight();
+        this.playerMesh = Player.createPlayerMesh();
+        this.flashlight = Player.createFlashlight();
+
+        camera.position.y = 5;
+        camera.position.z = -5;
 
         this.playerWithLight = new Group();
         this.playerWithLight.add(this.playerMesh);
         this.playerWithLight.add(this.flashlight);
+        this.playerWithLight.add(camera);
         this.playerWithLight.position.y += 0.5;
         scene.add(this.playerWithLight);
         return this;
@@ -70,28 +75,30 @@ export class Player implements GameObject, Taggable, UUID {
     get uuid() {
         return this.playerMesh.uuid;
     }
-}
 
-function createPlayerMesh() {
-    const geometry = new BoxGeometry(0.5, 1, 0.3, 1, 1, 1);
-    const faceMaterials = [
-        new MeshPhongMaterial({ color: 0x3333ff }),
-        new MeshPhongMaterial({ color: 0x3333ff }),
-        new MeshPhongMaterial({ color: 0x3333ff }),
-        new MeshPhongMaterial({ color: 0x3333ff }),
-        new MeshPhongMaterial({ color: 0xffff33 }),
-        new MeshPhongMaterial({ color: 0x3333ff }),
-    ];
-    const playerMesh = new Mesh(geometry, faceMaterials);
-    playerMesh.castShadow = true;
-    playerMesh.receiveShadow = true;
-    return playerMesh;
-}
+    private static createPlayerMesh() {
+        const geometry = new BoxGeometry(0.5, 1, 0.3, 1, 1, 1);
+        const faceMaterials = [
+            new MeshPhongMaterial({ color: 0x3333ff }),
+            new MeshPhongMaterial({ color: 0x3333ff }),
+            new MeshPhongMaterial({ color: 0x3333ff }),
+            new MeshPhongMaterial({ color: 0x3333ff }),
+            new MeshPhongMaterial({ color: 0xffff33 }),
+            new MeshPhongMaterial({ color: 0x3333ff }),
+        ];
+        const playerMesh = new Mesh(geometry, faceMaterials);
+        playerMesh.castShadow = true;
+        playerMesh.receiveShadow = true;
+        return playerMesh;
+    }
 
-function createFlashlight() {
-    const light = new PointLight(0xffffff);
-    light.position.y = 2;
-    light.position.z = 2;
-    light.castShadow = true;
-    return light;
+    private static createFlashlight() {
+        const light = new PointLight(0xffffff);
+        light.position.y = 2;
+        light.position.z = 2;
+        light.castShadow = true;
+        light.shadow.mapSize.width = 2048;
+        light.shadow.mapSize.height = 2048;
+        return light;
+    }
 }
