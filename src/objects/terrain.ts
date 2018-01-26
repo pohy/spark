@@ -1,4 +1,4 @@
-import { GameObject, Taggable, UUID } from './game-object';
+import { GameObject } from './game-object';
 import {
     Mesh,
     Scene,
@@ -9,7 +9,7 @@ import {
 const SimplexNoise = require('simplex-noise');
 import { Tags } from '../tags';
 
-export class Terrain implements GameObject, Taggable, UUID {
+export class Terrain implements GameObject {
     update(delta: number): void {}
     private scene: Scene;
     private terrain: Mesh;

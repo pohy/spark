@@ -9,11 +9,11 @@ import {
     BoxGeometry,
     PerspectiveCamera,
 } from 'three';
-import { GameObject, Taggable, UUID } from './game-object';
+import { GameObject } from './game-object';
 import { keyboardState } from '../input/keyboard-state';
 import { Terrain } from './terrain';
 
-export class Player implements GameObject, Taggable, UUID {
+export class Player implements GameObject {
     private moveSpeed: number = 5;
     private sprintMultiplier: number = 2;
     private rotationSpeed: number = 100;

@@ -1,4 +1,4 @@
-import { GameObject, Taggable, UUID } from './game-object';
+import { GameObject } from './game-object';
 import {
     BoxGeometry,
     Color,
@@ -15,7 +15,7 @@ import { Tags } from '../tags';
 const vertexShader = require('../shaders/tree-vertex-shader.glsl');
 const fragmentShader = require('../shaders/tree-fragment-shader.glsl');
 
-export class Tree implements GameObject, Taggable, UUID {
+export class Tree implements GameObject {
     private scene: Scene;
     private tree: Mesh;
     private rooted: boolean = false;
