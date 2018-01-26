@@ -24,7 +24,14 @@ import { GameObject } from './objects/game-object';
 import { Terrain } from './objects/terrain';
 import { Keyboard } from './input/keyboard';
 
-const gameEl = <HTMLCanvasElement>document.getElementById('game');
+declare global {
+    interface Window {
+        currentAnimationFrameID: number;
+    }
+}
+
+const gameEl = document.createElement('canvas');
+gameEl.id = 'game';
 const width = 1280,
     height = 720;
 
@@ -41,7 +48,12 @@ const renderer = new WebGLRenderer({
 });
 renderer.setSize(width, height);
 renderer.shadowMap.enabled = true;
-document.body.appendChild(renderer.domElement);
+const existingRenderer = document.getElementById('game');
+if (existingRenderer) {
+    document.body.replaceChild(renderer.domElement, existingRenderer);
+} else {
+    document.body.appendChild(renderer.domElement);
+}
 renderer.domElement.focus();
 renderer.domElement.addEventListener('contextmenu', (event) =>
     event.preventDefault(),
@@ -62,6 +74,10 @@ scene.add(createSkyBox());
 
 let wasClicked = false;
 
+if (window.currentAnimationFrameID) {
+    window.cancelAnimationFrame(window.currentAnimationFrameID);
+}
+
 animate();
 
 function animate() {
@@ -71,7 +87,7 @@ function animate() {
     render();
 
     stats.update();
-    window.requestAnimationFrame(animate);
+    window.currentAnimationFrameID = window.requestAnimationFrame(animate);
 }
 
 function update(delta: number) {
