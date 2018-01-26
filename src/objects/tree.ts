@@ -26,10 +26,12 @@ export class Tree implements GameObject {
     };
     private highlightColor: number = 0x333333;
     private emissiveMaterialHex: number;
+    private delta: number = 1;
 
-    constructor(scene: Scene, position: Vector3) {
+    constructor(scene: Scene, position: Vector3, normal: Vector3) {
         this.scene = scene;
         this.tree = Tree.createCube();
+        this.tree.lookAt(normal);
         const shaderMaterial = <ShaderMaterial>this.tree.material;
         this.emissiveMaterialHex = shaderMaterial.uniforms.emissive.value.getHex();
 
@@ -39,6 +41,7 @@ export class Tree implements GameObject {
     }
 
     update(delta: number) {
+        this.delta = delta;
         const shaderMaterial = <ShaderMaterial>this.tree.material;
         shaderMaterial.uniforms.time.value += delta;
         shaderMaterial.needsUpdate = true;
@@ -53,7 +56,6 @@ export class Tree implements GameObject {
         }
         if (!this.rooted && left) {
             const { scale: { x, y, z }, geometry } = this.tree;
-            const { parameters: { height } } = <BoxGeometry>geometry;
             const currentGrowRate = this.growRate * delta;
             this.tree.scale.set(
                 x + currentGrowRate,
@@ -83,8 +85,26 @@ export class Tree implements GameObject {
         this.highlighted.next = true;
     }
 
-    remove() {
-        this.scene.remove(this.tree);
+    remove(): Promise<void> {
+        return new Promise((resolve) => {
+            let shrinkMultiplier = 2;
+            const intervalID = setInterval(() => {
+                const { tree: { scale: { x, y, z } } } = this;
+                if (x <= 0) {
+                    clearInterval(intervalID);
+                    resolve();
+                    this.scene.remove(this.tree);
+                }
+                const currentShrinkRate =
+                    (this.growRate + shrinkMultiplier) * 3 * this.delta;
+                this.tree.scale.set(
+                    x - currentShrinkRate,
+                    y - currentShrinkRate,
+                    z - currentShrinkRate,
+                );
+                shrinkMultiplier += Math.random() / 2;
+            }, 10);
+        });
     }
 
     get tags() {

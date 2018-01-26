@@ -4,7 +4,7 @@ import {
     Mesh,
     PointLight,
     Scene,
-    Math,
+    Math as ThreeMath,
     MeshPhongMaterial,
     BoxGeometry,
     PerspectiveCamera,
@@ -15,7 +15,7 @@ import { Terrain } from './terrain';
 
 export class Player implements GameObject {
     private moveSpeed: number = 5;
-    private sprintMultiplier: number = 2;
+    private sprintMultiplier: number = 4;
     private rotationSpeed: number = 100;
     private playerMesh: Mesh;
     private flashlight: PointLight;
@@ -40,6 +40,11 @@ export class Player implements GameObject {
     }
 
     update(delta: number) {
+        this.handleMovement(delta);
+        this.placeOnTerrainHeight();
+    }
+
+    private handleMovement(delta: number) {
         const {
             moveSpeed,
             rotationSpeed,
@@ -51,9 +56,10 @@ export class Player implements GameObject {
         const moveSpeedMultiplier = sprint ? sprintMultiplier : 1;
         const currentMoveSpeed = moveSpeed * moveSpeedMultiplier * delta;
 
-        const rotationMultiplier = !up && !down ? 2 : 1.5;
-        const currentRotation =
-            Math.degToRad(rotationSpeed) * rotationMultiplier * delta;
+        const rotationMultiplier = !up && !down ? 1.3 : 1;
+        const currentRotation = ThreeMath.degToRad(
+            rotationSpeed * rotationMultiplier * delta,
+        );
 
         if (up && !down) {
             playerWithLight.translateZ(currentMoveSpeed);
@@ -100,9 +106,9 @@ export class Player implements GameObject {
     }
 
     private static createFlashlight() {
-        const light = new PointLight(0xffffff);
-        light.position.y = 2;
-        light.position.z = 2;
+        const light = new PointLight(0xffffff, 0.7);
+        light.position.y = 5;
+        light.position.z = 0.5;
         light.castShadow = true;
         light.shadow.mapSize.width = 2048;
         light.shadow.mapSize.height = 2048;

@@ -64,14 +64,14 @@ mouseStateSetRelativeElement(renderer.domElement);
 
 const raycaster = new Raycaster();
 
-const ambientLight = new AmbientLight(0x444444);
+const ambientLight = new AmbientLight(0x444444, 0.2);
 
 const terrain = new Terrain(scene);
 const player = new Player(scene, camera, terrain);
 
-scene.add(ambientLight);
 let objects: GameObject[] = [player, terrain];
 
+scene.add(ambientLight);
 scene.add(createSkyBox());
 
 let wasClicked = false;
@@ -101,29 +101,34 @@ function update(delta: number) {
     } = mouseState();
     raycaster.setFromCamera(position, camera);
     const hoveredObjects = findHoveredObjects(raycaster);
+    moveCamera();
     const hoveredTree = <Tree>hoveredObjects.find(objectByTag(Tags.Tree));
     if (hoveredTree) {
         hoveredTree.highlight();
     }
     if (left && !wasClicked && !hoveredTree) {
         wasClicked = true;
-        spawnNewTree(raycaster);
+        plantTree(raycaster);
     } else if (right && !wasClicked && hoveredTree) {
         wasClicked = true;
         removeClickedTree(hoveredTree);
     } else if (!left && !right && wasClicked) {
         wasClicked = false;
     }
-    const dampFactor = 7;
-    camera.lookAt(new Vector3(-mouseX * dampFactor, mouseY * dampFactor, 0.5));
     objects.forEach((object) => object.update(delta));
+}
+
+function moveCamera() {
+    const { position: { x, y } } = mouseState();
+    const dampFactor = 7;
+    camera.lookAt(new Vector3(-x * dampFactor, y * dampFactor, 0.5));
 }
 
 function render() {
     renderer.render(scene, camera);
 }
 
-function spawnNewTree(raycaster: Raycaster) {
+function plantTree(raycaster: Raycaster) {
     const terrain = <Terrain>objects.find(objectByTag(Tags.Terrain));
     if (!terrain) {
         return;
@@ -132,15 +137,13 @@ function spawnNewTree(raycaster: Raycaster) {
     if (intersects.length <= 0) {
         return;
     }
-    const { x, y, z } = intersects[0].point;
-    objects.push(new Tree(scene, new Vector3(x, y + 0.5, z)));
+    const [{ point: { x, y, z }, face: { normal } }] = intersects;
+    objects.push(new Tree(scene, new Vector3(x, y + 0.5, z), normal));
 }
 
-function removeClickedTree(treeForRemoval: Tree) {
-    treeForRemoval.remove();
-    objects = objects.filter(
-        (object) => (<Tree>object).uuid !== treeForRemoval.uuid,
-    );
+async function removeClickedTree(treeForRemoval: Tree) {
+    await treeForRemoval.remove();
+    objects = objects.filter((object) => object.uuid !== treeForRemoval.uuid);
 }
 
 function findHoveredObjects(raycaster: Raycaster) {
