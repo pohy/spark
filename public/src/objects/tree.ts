@@ -14,7 +14,8 @@ import {
 } from 'three';
 import { mouseState } from '../input/mouse-state';
 import { Tags } from '../tags';
-import TreeShaders from '../shaders/tree-shaders';
+const vertexShader = require('../shaders/tree-vertex-shader.glsl');
+const fragmentShader = require('../shaders/tree-fragment-shader.glsl');
 
 export class Tree implements GameObject, Taggable, UUID {
     private scene: Scene;
@@ -113,8 +114,8 @@ export class Tree implements GameObject, Taggable, UUID {
         ]);
         const shaderMaterial = new ShaderMaterial({
             uniforms,
-            vertexShader: TreeShaders.vertex,
-            fragmentShader: TreeShaders.fragment,
+            vertexShader,
+            fragmentShader,
             lights: true,
         });
         const cubeMesh = new Mesh(geometry, shaderMaterial);
