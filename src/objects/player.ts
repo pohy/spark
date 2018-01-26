@@ -9,7 +9,7 @@ import {
     BoxGeometry,
     PerspectiveCamera,
 } from 'three';
-import { GameObject, Taggable, UUID } from './object';
+import { GameObject, Taggable, UUID } from './game-object';
 import { keyboardState } from '../input/keyboard-state';
 
 export class Player implements GameObject, Taggable, UUID {

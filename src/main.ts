@@ -5,7 +5,6 @@ import {
     Clock,
     DoubleSide,
     Intersection,
-    Math,
     Mesh,
     MeshBasicMaterial,
     MeshPhongMaterial,
@@ -21,8 +20,8 @@ import { mouseStateSetRelativeElement, mouseState } from './input/mouse-state';
 import { Tags } from './tags';
 import { Player } from './objects/player';
 import { Tree } from './objects/tree';
-import { GameObject, Taggable, UUID } from './objects/object';
-import { Terrain } from './objects/Terrain';
+import { GameObject } from './objects/game-object';
+import { Terrain } from './objects/terrain';
 import { Keyboard } from './input/keyboard';
 
 const gameEl = <HTMLCanvasElement>document.getElementById('game');
@@ -59,15 +58,7 @@ let objects: GameObject[] = [new Player(scene, camera), new Terrain(scene)];
 
 scene.add(ambientLight);
 
-// scene.add(ground);
 scene.add(createSkyBox());
-
-// camera.position.x = -5;
-// camera.position.y = 5;
-// camera.position.z = 5;
-// camera.rotateY(Math.degToRad(-45));
-// camera.rotateX(Math.degToRad(-45));
-// camera.rotateOnWorldAxis(new Vector3(0, 1, 0), Math.degToRad(-45));
 
 let wasClicked = false;
 
@@ -171,4 +162,3 @@ function createPlane() {
     });
     return new Mesh(geometry, material);
 }
-// })();

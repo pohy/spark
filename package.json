@@ -4,7 +4,7 @@
   "description": "A game",
   "private": true,
   "scripts": {
-    "prettier": "prettier --write public/{src/**/*.ts,style.css}",
+    "prettier": "prettier --config ./.prettierrc --write {src/**/*.ts,src/**/*.js,public/**/*.css}",
     "start": "parcel public/index.html",
     "build": "parcel build --no-cache --public-url /spark public/index.html",
     "deploy": "gh-pages -d dist"

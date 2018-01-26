@@ -1,8 +1,6 @@
-import { GameObject, Taggable, UUID } from './object';
+import { GameObject, Taggable, UUID } from './game-object';
 import {
-    BoxBufferGeometry,
     BoxGeometry,
-    BufferGeometry,
     Color,
     Math as ThreeMath,
     Mesh,

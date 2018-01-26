@@ -1,4 +1,3 @@
-import { Scene, Vector3 } from 'three';
 import { Tags } from '../tags';
 
 export interface GameObject {

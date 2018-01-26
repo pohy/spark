@@ -1,10 +1,9 @@
-import { GameObject, Taggable, UUID } from './object';
+import { GameObject, Taggable, UUID } from './game-object';
 import {
     Mesh,
     Scene,
     Math as ThreeMath,
     PlaneGeometry,
-    MeshDepthMaterial,
     MeshPhongMaterial,
 } from 'three';
 const SimplexNoise = require('simplex-noise');
@@ -56,7 +55,6 @@ export class Terrain implements GameObject, Taggable, UUID {
         });
         const mesh = new Mesh(geometry, material);
         mesh.receiveShadow = true;
-        // mesh.castShadow = true;
         mesh.rotateX(ThreeMath.degToRad(270));
         return mesh;
     }
