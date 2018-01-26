@@ -11,6 +11,7 @@ import {
 } from 'three';
 import { GameObject, Taggable, UUID } from './game-object';
 import { keyboardState } from '../input/keyboard-state';
+import { Terrain } from './terrain';
 
 export class Player implements GameObject, Taggable, UUID {
     private moveSpeed: number = 5;
@@ -19,8 +20,10 @@ export class Player implements GameObject, Taggable, UUID {
     private playerMesh: Mesh;
     private flashlight: PointLight;
     private playerWithLight: Group;
+    private terrain: Terrain;
 
-    constructor(scene: Scene, camera: PerspectiveCamera) {
+    constructor(scene: Scene, camera: PerspectiveCamera, terrain: Terrain) {
+        this.terrain = terrain;
         this.rotationSpeed = 100;
 
         this.playerMesh = Player.createPlayerMesh();
@@ -33,9 +36,7 @@ export class Player implements GameObject, Taggable, UUID {
         this.playerWithLight.add(this.playerMesh);
         this.playerWithLight.add(this.flashlight);
         this.playerWithLight.add(camera);
-        this.playerWithLight.position.y += 0.5;
         scene.add(this.playerWithLight);
-        return this;
     }
 
     update(delta: number) {
@@ -66,6 +67,12 @@ export class Player implements GameObject, Taggable, UUID {
         if (right && !left) {
             playerWithLight.rotateY(-currentRotation);
         }
+        this.placeOnTerrainHeight();
+    }
+
+    private placeOnTerrainHeight() {
+        const { terrain, playerWithLight: { position: { x, z } } } = this;
+        this.playerWithLight.position.y = terrain.positionHeight(x, z) + 0.5;
     }
 
     get tags() {

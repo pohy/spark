@@ -66,9 +66,11 @@ const raycaster = new Raycaster();
 
 const ambientLight = new AmbientLight(0x444444);
 
-let objects: GameObject[] = [new Player(scene, camera), new Terrain(scene)];
+const terrain = new Terrain(scene);
+const player = new Player(scene, camera, terrain);
 
 scene.add(ambientLight);
+let objects: GameObject[] = [player, terrain];
 
 scene.add(createSkyBox());
 
