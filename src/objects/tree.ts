@@ -27,13 +27,13 @@ export class Tree implements GameObject {
     private highlightColor: number = 0x333333;
     private emissiveMaterialHex: number;
 
-    constructor(scene: Scene, { x, y, z }: Vector3) {
+    constructor(scene: Scene, position: Vector3) {
         this.scene = scene;
         this.tree = Tree.createCube();
         const shaderMaterial = <ShaderMaterial>this.tree.material;
         this.emissiveMaterialHex = shaderMaterial.uniforms.emissive.value.getHex();
 
-        this.tree.position.set(x, y, z);
+        this.tree.position.copy(position);
         this.tree.rotateY(ThreeMath.degToRad(Math.random() * 360));
         this.scene.add(this.tree);
     }
@@ -60,7 +60,6 @@ export class Tree implements GameObject {
                 y + currentGrowRate,
                 z + currentGrowRate,
             );
-            this.tree.position.y = height * this.tree.scale.y / 2;
         }
     }
 
