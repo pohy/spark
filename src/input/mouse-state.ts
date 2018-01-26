@@ -3,6 +3,7 @@ import { Vector2 } from 'three';
 
 export interface MouseState {
     position: Vector2;
+    positionDelta: Vector2;
     left: boolean;
     right: boolean;
     middle: boolean;
@@ -13,6 +14,7 @@ const listenerIDs: number[] = [];
 
 const state: MouseState = {
     position: new Vector2(),
+    positionDelta: new Vector2(0, 0),
     left: false,
     right: false,
     middle: false,
@@ -54,9 +56,12 @@ function onButton(value: boolean) {
 
 function onMove(element?: HTMLElement) {
     return ({ x, y }: Vector2) => {
+        const { x: oldX, y: oldY } = state.position;
         const width = element ? element.clientWidth : window.innerWidth;
         const height = element ? element.clientHeight : window.innerHeight;
-        state.position.x = x / width * 2 - 1;
-        state.position.y = -(y / height) * 2 + 1;
+        const newX = x / width * 2 - 1;
+        const newY = -(y / height) * 2 + 1;
+        state.positionDelta.copy(new Vector2(newX - oldX, newY - oldY));
+        state.position.copy(new Vector2(newX, newY));
     };
 }

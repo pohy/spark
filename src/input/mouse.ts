@@ -126,6 +126,8 @@ export class Mouse {
                     } = element;
                     position.x = Math.min(x - offsetLeft, offsetWidth);
                     position.y = Math.min(y - offsetTop, offsetHeight);
+                } else if (element) {
+                    return;
                 }
                 moveCallback && moveCallback(position);
             });
