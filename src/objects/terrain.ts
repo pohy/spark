@@ -4,19 +4,28 @@ import {
     Scene,
     Math as ThreeMath,
     PlaneGeometry,
-    MeshPhongMaterial,
+    ShaderMaterial,
+    ShaderLib,
+    UniformsUtils,
 } from 'three';
 const SimplexNoise = require('simplex-noise');
 import { Tags } from '../tags';
+const vertexShader = require('../shaders/terrain-vertex-shader.glsl');
+const fragmentShader = require('../shaders/terrain-fragment-shader.glsl');
 
 export class Terrain implements GameObject {
-    update(delta: number): void {}
     private scene: Scene;
     private terrain: Mesh;
     private seed: number;
     private simplex: any;
+
     private static width = 500;
-    private static height = 500;
+    private static depth = 500;
+    private static scale = 90;
+    private static heightMin = -9;
+    private static heightMax = 25;
+    private static waterLevel = -4;
+    private static snowLevel = 23;
 
     constructor(scene: Scene) {
         this.scene = scene;
@@ -26,6 +35,8 @@ export class Terrain implements GameObject {
 
         scene.add(this.terrain);
     }
+
+    update(delta: number): void {}
 
     get uuid() {
         return this.terrain.uuid;
@@ -40,22 +51,23 @@ export class Terrain implements GameObject {
     }
 
     public positionHeight(x: number, y: number) {
-        const multiplyFactor = 5;
-        const smoothness = 70;
-        const noiseValue = this.simplex.noise2D(x / smoothness, y / smoothness);
+        const noiseValue = this.simplex.noise2D(
+            x / Terrain.scale,
+            y / Terrain.scale,
+        );
         return ThreeMath.mapLinear(
             noiseValue,
             -1,
             1,
-            -1 * multiplyFactor,
-            3 * multiplyFactor,
+            Terrain.heightMin,
+            Terrain.heightMax,
         );
     }
 
     private generateTerrainPlane() {
         const geometry = new PlaneGeometry(
             Terrain.width,
-            Terrain.height,
+            Terrain.depth,
             100,
             100,
         );
@@ -64,12 +76,25 @@ export class Terrain implements GameObject {
             const { x, z } = geometry.vertices[i];
             geometry.vertices[i].y = this.positionHeight(x, z);
         }
+        geometry.computeVertexNormals();
         geometry.verticesNeedUpdate = true;
-        const material = new MeshPhongMaterial({
-            wireframe: false,
-            color: 0xfaff30,
+        const uniforms = UniformsUtils.merge([
+            ShaderLib.phong.uniforms,
+            {
+                time: { type: 'f', value: 0 },
+                heightMax: { type: 'f', value: Terrain.heightMax },
+                heightMin: { type: 'f', value: Terrain.heightMin },
+                waterLevel: { type: 'f', value: Terrain.waterLevel },
+                snowLevel: { type: 'f', value: Terrain.snowLevel },
+            },
+        ]);
+        const shaderMaterial = new ShaderMaterial({
+            uniforms,
+            vertexShader,
+            fragmentShader,
+            lights: true,
         });
-        const mesh = new Mesh(geometry, material);
+        const mesh = new Mesh(geometry, shaderMaterial);
         mesh.receiveShadow = true;
         return mesh;
     }

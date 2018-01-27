@@ -3,6 +3,7 @@ import {
     BackSide,
     BoxGeometry,
     Clock,
+    Color,
     DoubleSide,
     Intersection,
     Mesh,
@@ -10,6 +11,7 @@ import {
     MeshPhongMaterial,
     PerspectiveCamera,
     PlaneGeometry,
+    PointLight,
     Raycaster,
     Scene,
     Vector3,
@@ -50,7 +52,7 @@ renderer.setSize(width, height);
 renderer.shadowMap.enabled = true;
 const existingRenderer = document.getElementById('game');
 if (existingRenderer) {
-    document.body.replaceChild(renderer.domElement, existingRenderer);
+    location.reload();
 } else {
     document.body.appendChild(renderer.domElement);
 }
@@ -64,7 +66,7 @@ mouseStateSetRelativeElement(renderer.domElement);
 
 const raycaster = new Raycaster();
 
-const ambientLight = new AmbientLight(0x444444, 0.2);
+const ambientLight = new AmbientLight(0xffffff, 0.2);
 
 const terrain = new Terrain(scene);
 const player = new Player(scene, camera, terrain);
@@ -75,6 +77,7 @@ scene.add(ambientLight);
 scene.add(createSkyBox());
 
 let wasClicked = false;
+let accumulator = 0;
 
 if (window.currentAnimationFrameID) {
     window.cancelAnimationFrame(window.currentAnimationFrameID);
@@ -116,6 +119,8 @@ function update(delta: number) {
         wasClicked = false;
     }
     objects.forEach((object) => object.update(delta));
+    ambientLight.intensity = Math.abs(Math.sin(accumulator / 10));
+    accumulator += delta;
 }
 
 function moveCamera() {
