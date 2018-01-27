@@ -19,13 +19,13 @@ export class Terrain implements GameObject {
     private seed: number;
     private simplex: any;
 
-    private static width = 500;
-    private static depth = 500;
-    private static scale = 90;
-    private static heightMin = -9;
-    private static heightMax = 25;
-    private static waterLevel = -4;
-    private static snowLevel = 23;
+    public static width = 500;
+    public static depth = 500;
+    public static scale = 90;
+    public static heightMin = -9;
+    public static heightMax = 25;
+    public static waterLevel = -4;
+    public static snowLevel = 23;
 
     constructor(scene: Scene) {
         this.scene = scene;

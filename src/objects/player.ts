@@ -17,6 +17,7 @@ export class Player implements GameObject {
     private moveSpeed: number = 5;
     private sprintMultiplier: number = 4;
     private rotationSpeed: number = 100;
+    private accumulator: number = 0;
     private playerMesh: Mesh;
     private flashlight: PointLight;
     private playerWithLight: Group;
@@ -42,6 +43,7 @@ export class Player implements GameObject {
     update(delta: number) {
         this.handleMovement(delta);
         this.placeOnTerrainHeight();
+        this.accumulator += delta;
     }
 
     private handleMovement(delta: number) {
@@ -73,12 +75,15 @@ export class Player implements GameObject {
         if (right && !left) {
             playerWithLight.rotateY(-currentRotation);
         }
-        this.placeOnTerrainHeight();
     }
 
     private placeOnTerrainHeight() {
         const { terrain, playerWithLight: { position: { x, z } } } = this;
-        this.playerWithLight.position.y = terrain.positionHeight(x, z) + 0.5;
+        const { waterLevel } = Terrain;
+        const terrainHeight = terrain.positionHeight(x, z);
+        if (terrainHeight > waterLevel) {
+            this.playerWithLight.position.y = terrainHeight + 0.5;
+        }
     }
 
     get tags() {

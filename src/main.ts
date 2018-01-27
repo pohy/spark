@@ -66,12 +66,14 @@ mouseStateSetRelativeElement(renderer.domElement);
 
 const raycaster = new Raycaster();
 
-const ambientLight = new AmbientLight(0xffffff, 0.2);
+const ambientLight = new AmbientLight(0xffffff, 1.0);
 
 const terrain = new Terrain(scene);
 const player = new Player(scene, camera, terrain);
 
-let objects: GameObject[] = [player, terrain];
+let objects: GameObject[] = (<Array<GameObject>>[])
+    .concat(player, terrain)
+    .concat(spawnTrees(terrain, scene));
 
 scene.add(ambientLight);
 scene.add(createSkyBox());
@@ -96,12 +98,7 @@ function animate() {
 }
 
 function update(delta: number) {
-    const {
-        position,
-        position: { x: mouseX, y: mouseY },
-        left,
-        right,
-    } = mouseState();
+    const { position, left, right } = mouseState();
     raycaster.setFromCamera(position, camera);
     const hoveredObjects = findHoveredObjects(raycaster);
     moveCamera();
@@ -119,7 +116,7 @@ function update(delta: number) {
         wasClicked = false;
     }
     objects.forEach((object) => object.update(delta));
-    ambientLight.intensity = Math.abs(Math.sin(accumulator / 10));
+    // ambientLight.intensity = Math.abs(Math.sin(accumulator / 10));
     accumulator += delta;
 }
 
@@ -180,11 +177,25 @@ function createSkyBox() {
     return new Mesh(geometry, material);
 }
 
-function createPlane() {
-    const geometry = new PlaneGeometry(50, 50);
-    const material = new MeshPhongMaterial({
-        color: 0xa9a9a9,
-        side: DoubleSide,
-    });
-    return new Mesh(geometry, material);
+function spawnTrees(terrain: Terrain, scene: Scene): GameObject[] {
+    const { width, depth, snowLevel, waterLevel } = Terrain;
+    const widthStart = width / 2 * -1;
+    const depthStart = depth / 2 * -1;
+    let trees = [];
+    const spawnChance = 0.5;
+    const step = 20;
+    for (let z = depthStart; z < Math.abs(widthStart); z += step) {
+        for (let x = widthStart; x < Math.abs(depthStart); x += step) {
+            const y = terrain.positionHeight(x, z);
+            if (
+                y > waterLevel &&
+                y < snowLevel &&
+                Math.random() <= spawnChance
+            ) {
+                const newTree = new Tree(scene, new Vector3(x, y, z));
+                trees.push(newTree);
+            }
+        }
+    }
+    return trees;
 }
