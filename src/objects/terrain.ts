@@ -9,7 +9,7 @@ import {
     UniformsUtils,
 } from 'three';
 const SimplexNoise = require('simplex-noise');
-import { Tags } from '../tags';
+import { Tags } from '../common/tags';
 const vertexShader = require('../shaders/terrain-vertex-shader.glsl');
 const fragmentShader = require('../shaders/terrain-fragment-shader.glsl');
 

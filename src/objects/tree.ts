@@ -4,6 +4,7 @@ import {
     Color,
     Math as ThreeMath,
     Mesh,
+    MeshPhongMaterial,
     Scene,
     ShaderLib,
     ShaderMaterial,
@@ -11,7 +12,8 @@ import {
     Vector3,
 } from 'three';
 import { mouseState } from '../input/mouse-state';
-import { Tags } from '../tags';
+import { Tags } from '../common/tags';
+import { loadModel } from '../common/load-model';
 const vertexShader = require('../shaders/tree-vertex-shader.glsl');
 const fragmentShader = require('../shaders/tree-fragment-shader.glsl');
 
@@ -28,27 +30,25 @@ export class Tree implements GameObject {
     private emissiveMaterialHex: number;
     private delta: number = 1;
 
-    constructor(scene: Scene, position: Vector3, normal?: Vector3) {
+    constructor(scene: Scene, position: Vector3) {
         this.scene = scene;
-        this.tree = Tree.createCube();
+        this.tree = loadModel(require('../../assets/tree.json'));
+        this.tree.castShadow = true;
+        this.tree.receiveShadow = true;
         this.tree.position.copy(position);
-        this.tree.lookAt(
-            normal
-                ? normal
-                : new Vector3(Math.random(), Math.random(), Math.random()),
-        );
-        const shaderMaterial = <ShaderMaterial>this.tree.material;
-        this.emissiveMaterialHex = shaderMaterial.uniforms.emissive.value.getHex();
+        const phongMaterial = (this.tree.material as MeshPhongMaterial[])[0];
+        this.emissiveMaterialHex = phongMaterial.emissive.getHex();
 
         this.tree.rotateY(ThreeMath.degToRad(Math.random() * 360));
         this.scene.add(this.tree);
+
+        if (!mouseState().left) {
+            this.grow(this.growRate * Math.random());
+        }
     }
 
     update(delta: number) {
         this.delta = delta;
-        const shaderMaterial = <ShaderMaterial>this.tree.material;
-        shaderMaterial.uniforms.time.value += delta;
-        shaderMaterial.needsUpdate = true;
         this.handleInitialGrowth(delta);
         this.handleHighlight();
     }
@@ -91,7 +91,6 @@ export class Tree implements GameObject {
         const { left } = mouseState();
         if (!this.rooted && !left) {
             this.rooted = true;
-            this.grow(this.growRate * Math.random());
         }
         if (!this.rooted && left) {
             this.grow(this.growRate * delta);
@@ -100,23 +99,30 @@ export class Tree implements GameObject {
 
     private grow(amount: number) {
         const { scale: { x, y, z } } = this.tree;
-        this.tree.scale.set(x + amount, y + amount, z + amount);
+        const widthGrowAmount = amount / 2;
+        this.tree.scale.set(
+            x + widthGrowAmount,
+            y + amount,
+            z + widthGrowAmount,
+        );
     }
 
     private handleHighlight() {
         if (this.rooted && this.highlighted.current && !this.highlighted.next) {
             this.highlighted.current = false;
-            const shaderMaterial = <ShaderMaterial>this.tree.material;
-            shaderMaterial.uniforms.emissive.value.setHex(
-                this.emissiveMaterialHex,
-            );
+            this.setEmissive(this.emissiveMaterialHex);
         }
         if (this.rooted && this.highlighted.next) {
             this.highlighted.current = true;
             this.highlighted.next = false;
-            const shaderMaterial = <ShaderMaterial>this.tree.material;
-            shaderMaterial.uniforms.emissive.value.setHex(this.highlightColor);
+            this.setEmissive(this.highlightColor);
         }
+    }
+
+    private setEmissive(color: number) {
+        (<MeshPhongMaterial[]>this.tree.material).forEach((material) => {
+            material.emissive.setHex(color);
+        });
     }
 
     private static createCube() {

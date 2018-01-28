@@ -3,15 +3,10 @@ import {
     BackSide,
     BoxGeometry,
     Clock,
-    Color,
-    DoubleSide,
     Intersection,
     Mesh,
     MeshBasicMaterial,
-    MeshPhongMaterial,
     PerspectiveCamera,
-    PlaneGeometry,
-    PointLight,
     Raycaster,
     Scene,
     Vector3,
@@ -19,7 +14,7 @@ import {
 } from 'three';
 const Stats = require('stats.js');
 import { mouseStateSetRelativeElement, mouseState } from './input/mouse-state';
-import { Tags } from './tags';
+import { Tags } from './common/tags';
 import { Player } from './objects/player';
 import { Tree } from './objects/tree';
 import { GameObject } from './objects/game-object';
@@ -66,7 +61,7 @@ mouseStateSetRelativeElement(renderer.domElement);
 
 const raycaster = new Raycaster();
 
-const ambientLight = new AmbientLight(0xffffff, 1.0);
+const ambientLight = new AmbientLight(0xf1a81c, 0.7);
 
 const terrain = new Terrain(scene);
 const player = new Player(scene, camera, terrain);
@@ -140,7 +135,7 @@ function plantTree(raycaster: Raycaster) {
         return;
     }
     const [{ point: { x, y, z }, face: { normal } }] = intersects;
-    objects.push(new Tree(scene, new Vector3(x, y + 0.5, z), normal));
+    objects.push(new Tree(scene, new Vector3(x, y + 0.5, z)));
 }
 
 async function removeClickedTree(treeForRemoval: Tree) {
@@ -171,7 +166,7 @@ function objectByUUID(uuid: string) {
 function createSkyBox() {
     const geometry = new BoxGeometry(900, 900, 900);
     const material = new MeshBasicMaterial({
-        color: 0x9999ff,
+        color: 0x788bff,
         side: BackSide,
     });
     return new Mesh(geometry, material);
@@ -192,7 +187,15 @@ function spawnTrees(terrain: Terrain, scene: Scene): GameObject[] {
                 y < snowLevel &&
                 Math.random() <= spawnChance
             ) {
-                const newTree = new Tree(scene, new Vector3(x, y, z));
+                const positionRandomFactor = Math.random() / 2 * -1 * 2;
+                const newTree = new Tree(
+                    scene,
+                    new Vector3(
+                        x + positionRandomFactor,
+                        y,
+                        z + positionRandomFactor,
+                    ),
+                );
                 trees.push(newTree);
             }
         }

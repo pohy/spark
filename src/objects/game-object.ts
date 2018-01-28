@@ -1,4 +1,4 @@
-import { Tags } from '../tags';
+import { Tags } from '../common/tags';
 
 export interface GameObject {
     update(delta: number): void;

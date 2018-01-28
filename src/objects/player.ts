@@ -1,4 +1,4 @@
-import { Tags } from '../tags';
+import { Tags } from '../common/tags';
 import {
     Group,
     Mesh,
@@ -35,7 +35,7 @@ export class Player implements GameObject {
 
         this.playerWithLight = new Group();
         this.playerWithLight.add(this.playerMesh);
-        // this.playerWithLight.add(this.flashlight);
+        this.playerWithLight.add(this.flashlight);
         this.playerWithLight.add(camera);
         scene.add(this.playerWithLight);
     }

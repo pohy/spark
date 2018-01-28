@@ -11,6 +11,7 @@
   },
   "author": "David Pohan",
   "devDependencies": {
+    "@types/md5": "^2.1.32",
     "@types/node": "^9.3.0",
     "@types/three": "^0.89.4",
     "gh-pages": "^1.1.0",
@@ -20,8 +21,11 @@
     "typescript": "^2.6.2"
   },
   "dependencies": {
+    "md5": "^2.2.1",
     "simplex-noise": "^2.3.0",
     "stats.js": "^0.17.0",
-    "three": "^0.89.0"
+    "three": "^0.89.0",
+    "three-mtl-loader": "^1.0.2",
+    "three-obj-loader": "^1.1.3"
   }
 }

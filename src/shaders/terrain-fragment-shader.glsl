@@ -48,7 +48,7 @@ vec3 colorFromHeight( float height ) {
     terrainColors[0] = vec3(0.0, 0.0, 0.8);
     terrainColors[1] = vec3(0.1, 0.3, 0.1);
     terrainColors[2] = vec3(0.4, 0.8, 0.4);
-    terrainColors[3] = vec3(1.0, 1.0, 1.0);
+    terrainColors[3] = vec3(1.0, 0.9, 0.8);
 
     if (height < waterLevelNormalized) {
         float blendAmount = mapLinear( height, 0.0, waterLevelNormalized, 0.0, 0.3);
